@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  dapr_aspnetcore:
+    image: ${DOCKER_REGISTRY-}dapraspnetcore
+    build:
+      context: .
+      dockerfile: dapr_aspnetcore/Dockerfile
