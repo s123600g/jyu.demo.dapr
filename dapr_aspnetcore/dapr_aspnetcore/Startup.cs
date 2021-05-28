@@ -12,10 +12,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 
 namespace dapr_aspnetcore
 {
+    // 使用 Dapr .NET SDK
+    // https://docs.microsoft.com/zh-tw/dotnet/architecture/dapr-for-net-developers/publish-subscribe#use-the-dapr-net-sdk
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -28,7 +33,14 @@ namespace dapr_aspnetcore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        // 設置Reponse內JSON key命名規則使用PascalCase而不是使用預設camelCase(駝峰式命名)
+                        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    })
+                    .AddDapr() // 註冊Dapr Services入App Pipline
+            ;
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(SWGENOptions =>
@@ -78,6 +90,9 @@ namespace dapr_aspnetcore
 
                 #endregion
             });
+
+            // 補齊.net core字元編碼類型，避免出現亂碼現象
+            services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,10 +130,16 @@ namespace dapr_aspnetcore
 
             app.UseRouting();
 
+            app.UseCloudEvents();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                // 加入Dapr在Pulish/Subscribe Endpoint Handler
+                // 讓屬於Dapr處理的pub/sub請求導向到Dapr自己的runtime去處理
+                endpoints.MapSubscribeHandler();
+
                 endpoints.MapControllers();
             });
         }
