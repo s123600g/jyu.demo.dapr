@@ -11,8 +11,9 @@
         "redis": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
       },
-      "composeLaunchAction": "None",
-      "commandVersion": "1.0"
+      "composeLaunchAction": "LaunchBrowser",
+      "commandVersion": "1.0",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/"
     }
   }
 }

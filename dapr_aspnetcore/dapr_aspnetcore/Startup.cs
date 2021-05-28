@@ -6,9 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace dapr_aspnetcore
@@ -26,6 +29,55 @@ namespace dapr_aspnetcore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(SWGENOptions =>
+            {
+                #region 設置Swagger頁面文件內容，放置API有關簡介資訊
+
+                SWGENOptions.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    // 文件標題
+                    Title = "Dapr_AspNetCore API",
+
+                    // 文件敘述
+                    Description = "A simple example ASP.NET Core Web API",
+
+                    // 服務條款，這裡必須是網址
+                    TermsOfService = new Uri("https://example.com/terms"),
+
+                    // 網站連結
+                    Contact = new OpenApiContact
+                    {
+                        Name = "dapr_aspnetcore",
+                        Email = string.Empty,
+                        Url = new Uri("https://twitter.com/spboyer"),
+                    },
+
+                    // 授權資訊
+                    License = new OpenApiLicense
+                    {
+                        Name = "Use under LICX",
+                        Url = new Uri("https://example.com/license"),
+                    }
+                });
+
+                #endregion
+
+                // XML 註解
+                // https://docs.microsoft.com/zh-tw/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio#xml-comments
+                // 這區塊是根據在程式內進行XML格式註解，生成一份對應參照XML文件
+                // 並且在Swagger UI介面中每個API項目名稱後面會帶入對應的XML說明內容敘述
+                #region 配置XML註解說明
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"; // 指定XML檔案名稱以專案名稱來命名
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile); // 指定放在專案目錄位置下
+                SWGENOptions.IncludeXmlComments(xmlPath);
+
+                #endregion
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +89,29 @@ namespace dapr_aspnetcore
             }
 
             app.UseHttpsRedirection();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger(SWOptions =>
+            {
+                // 這是是針對Swagger JSON檔案路由樣式配置，請注意必須要包含'{documentName}'
+                // 如果有設置此項目，必須要去更新再app.UseSwaggerUI內'SwaggerEndpoint'裡面路由樣式
+                // 如果沒設置此項目，預設路由為 /swagger/{documentName}/swagger.json
+                SWOptions.RouteTemplate = "api-docs/{documentName}/swagger.json";
+            });
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(SWUIOptions =>
+            {
+                // JSON預設路由為/swagger/v1/swagger.json
+                SWUIOptions.SwaggerEndpoint(
+                    "/api-docs/v1/swagger.json",
+                    "dap_aspnetcore API V1" // 這裡會跟介面右上方API選項內文字有關聯
+                );
+
+                // 加入此段將預設根目錄設置為Swagger UI頁面
+                SWUIOptions.RoutePrefix = string.Empty;
+            });
 
             app.UseRouting();
 
