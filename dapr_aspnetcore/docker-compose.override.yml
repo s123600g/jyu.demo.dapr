@@ -4,6 +4,8 @@ services:
 
   rabbitmq:
     image: "rabbitmq:3-management-alpine"
+    ports:
+      - "5675:5672"
     networks: 
       - dapr_aspnetcore
 
@@ -17,7 +19,7 @@ services:
   zipkin:
     image: "openzipkin/zipkin:latest"
     ports:
-      - "9411:9411" 
+      - "9412:9411" 
     networks: 
       - dapr_aspnetcore
 
@@ -46,6 +48,7 @@ services:
       - "443"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "./NLog_log:/app/bin/Debug/netcoreapp3.1/Log"
     networks: 
       - dapr_aspnetcore
 
