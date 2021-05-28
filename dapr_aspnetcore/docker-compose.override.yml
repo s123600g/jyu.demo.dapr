@@ -1,12 +1,69 @@
 version: '3.4'
 
 services:
+
+  rabbitmq:
+    image: "rabbitmq:3-management-alpine"
+    networks: 
+      - dapr_aspnetcore
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6380:6379"
+    networks: 
+      - dapr_aspnetcore
+
+  zipkin:
+    image: "openzipkin/zipkin:latest"
+    ports:
+      - "9411:9411" 
+    networks: 
+      - dapr_aspnetcore
+
+  dapr-placement:
+    image: "daprio/dapr:1.0.0"
+    command: ["./placement", "-port", "50005", "-log-level", "debug"]
+    ports: 
+      - "6050:50005"
+    networks: 
+      - dapr_aspnetcore
+
+  ####################################################################
+  # Web Api Service and dapr services
+  ####################################################################
   dapr_aspnetcore:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+    depends_on: 
+      - rabbitmq
+      - redis
+      - zipkin
+      - dapr-placement     
     ports:
       - "80"
       - "443"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks: 
+      - dapr_aspnetcore
+
+  dapr_aspnetcore-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "dapr_aspnetcore", 
+      "-app-port", "80",
+      "--dapr-http-port", "3500",
+      "--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:6050",
+      "-components-path", "/components",
+      "-config", "/configuration/config.yaml"
+      ]
+    volumes: 
+      - "./dapr/Components:/components"
+      - "./dapr/Config:/configuration"
+
+networks:
+  dapr_aspnetcore: 

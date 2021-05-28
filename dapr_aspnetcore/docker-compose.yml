@@ -1,8 +1,40 @@
 version: '3.4'
 
+####################################################################
+# The block are defined the basic services. 
+# If you want to add some configuration options, 
+# You should add configuration options to 'docker-compose.override.yml'
+####################################################################
 services:
+
+  rabbitmq:
+    image: "rabbitmq:3-management-alpine"
+
+  redis:
+    image: "redis:alpine"
+
+  zipkin:
+    image: "openzipkin/zipkin:latest"
+
+  dapr-placement:
+    image: "daprio/dapr:1.0.0"
+
+  ####################################################################
+  # Web Api Service and dapr services
+  ####################################################################
   dapr_aspnetcore:
     image: ${DOCKER_REGISTRY-}dapraspnetcore
     build:
       context: .
       dockerfile: dapr_aspnetcore/Dockerfile
+   
+  dapr_aspnetcore-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "dapr_aspnetcore", 
+      "-app-port", "80" 
+      ]
+    depends_on:
+      - dapr_aspnetcore
+    network_mode: "service:dapr_aspnetcore"
