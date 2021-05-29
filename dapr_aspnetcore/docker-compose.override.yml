@@ -4,8 +4,8 @@ services:
 
   rabbitmq:
     image: "rabbitmq:3-management-alpine"
-    ports:
-      - "5675:5672"
+    # ports:
+    #   - "5675:5672"
     networks: 
       - dapr_aspnetcore
 
@@ -26,8 +26,6 @@ services:
   dapr-placement:
     image: "daprio/dapr:1.0.0"
     command: ["./placement", "-port", "50005", "-log-level", "debug"]
-    ports: 
-      - "6050:50005"
     networks: 
       - dapr_aspnetcore
 
@@ -48,7 +46,7 @@ services:
       - "443"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - "./NLog_log:/app/bin/Debug/netcoreapp3.1/Log"
+      - "./log:/app/bin/Debug/netcoreapp3.1/Log"
     networks: 
       - dapr_aspnetcore
 
@@ -58,9 +56,9 @@ services:
       "./daprd", 
       "-app-id", "dapr_aspnetcore", 
       "-app-port", "80",
-      "--dapr-http-port", "3500",
-      "--dapr-grpc-port", "50001",
-      "-placement-host-address", "dapr-placement:6050",
+      # "--dapr-http-port", "3500",
+      # "--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components",
       "-config", "/configuration/config.yaml"
       ]
