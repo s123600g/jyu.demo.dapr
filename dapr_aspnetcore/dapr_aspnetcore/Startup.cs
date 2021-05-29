@@ -103,7 +103,13 @@ namespace dapr_aspnetcore
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // https://github.com/dapr/dapr/issues/1242
+            // 如果加入這一段強制轉HTTPS導向，會導致Dapr針對訂閱事件對應的Handle Api呼叫發生問題
+            // 當發生Publish Event之後，Dapr會呼叫有訂閱此Event的處理Action
+            // 當有加入下面這段強轉Https時候，一開始Dapr會透過80 Port呼叫有訂閱的Action
+            // Middleware接收到請求之後，會回應強制Htpps 狀態碼307回應，但是Dapr無法處理此狀態事件
+            // 最終會導致發生有訂閱此事件的Actioon沒有任何作為情況。
+            //app.UseHttpsRedirection();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger(SWOptions =>
@@ -111,7 +117,7 @@ namespace dapr_aspnetcore
                 // 這是是針對Swagger JSON檔案路由樣式配置，請注意必須要包含'{documentName}'
                 // 如果有設置此項目，必須要去更新再app.UseSwaggerUI內'SwaggerEndpoint'裡面路由樣式
                 // 如果沒設置此項目，預設路由為 /swagger/{documentName}/swagger.json
-                SWOptions.RouteTemplate = "api-docs/{documentName}/swagger.json";
+                SWOptions.RouteTemplate = "/api-docs/{documentName}/swagger.json";
             });
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
