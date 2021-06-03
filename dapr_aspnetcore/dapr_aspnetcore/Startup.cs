@@ -1,3 +1,6 @@
+using DaprApp.Interface.pubsub;
+using DaprApp.Interface.statestore;
+using DaprApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -93,6 +96,12 @@ namespace dapr_aspnetcore
 
             // 補齊.net core字元編碼類型，避免出現亂碼現象
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+
+            // 註冊Dapr PubSubEvent Services.
+            services.AddTransient<IPubSubEvent, DaprPublishServices>();
+
+            // 註冊Dapr StateStoreEvent Services.
+            services.AddTransient<IStateStoreEvent, DaprStateStoreServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -147,6 +156,12 @@ namespace dapr_aspnetcore
                 endpoints.MapSubscribeHandler();
 
                 endpoints.MapControllers();
+
+                // 設定Api路由樣式匹配規則
+                endpoints.MapControllerRoute(
+                    name: "ApiArea",
+                    pattern: "{area:exists}/{controller}/{action}"
+                );
             });
         }
     }
