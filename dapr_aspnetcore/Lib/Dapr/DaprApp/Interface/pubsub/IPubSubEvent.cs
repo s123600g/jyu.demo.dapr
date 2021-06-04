@@ -16,7 +16,9 @@ namespace DaprApp.Interface.pubsub
         /// <remarks>
         /// 在此方法中會約束所有帶入的參數都必須要去繼承EventDataBase類別。
         /// </remarks>
+        /// <param name="targetData">訊息內容資料封裝模型</param>
+        /// <param name="mqTopic">Queue message topic</param>
         /// <typeparam name="Target">資料來源物件類型</typeparam>
-        Task PublishEvent<Target>(Target targetData) where Target : EventDataBase;
+        Task PublishEvent<Target>(Target targetData, string mqTopic) where Target : EventDataBase;
     }
 }

@@ -2,6 +2,8 @@
 using Dapr.Client;
 using dapr_aspnetcore.Models;
 using DaprApp.Interface.pubsub;
+using DaprApp.Interface.statestore;
+using DataModel.EventBase;
 using DataModel.NewsMessage;
 using DataModel.Response;
 using Microsoft.AspNetCore.Http;
@@ -25,16 +27,19 @@ namespace dapr_aspnetcore.Controllers
         private readonly ILogger<NewsMsgController> log;
         private readonly DaprClient dapr;
         private readonly IPubSubEvent daprPubSub;
+        private readonly IStateStoreEvent daprStateStore;
 
         public NewsMsgController(
             ILogger<NewsMsgController> logger,
             DaprClient daprClient,
-            IPubSubEvent pubSubEvent
+            IPubSubEvent pubSubEvent,
+            IStateStoreEvent stateStoreEvent
         )
         {
             log = logger;
             dapr = daprClient;
             daprPubSub = pubSubEvent;
+            daprStateStore = stateStoreEvent;
         }
 
         /// <summary>
@@ -66,23 +71,26 @@ namespace dapr_aspnetcore.Controllers
 
                 #region 封裝發佈訊息
 
-                NewsMessageContent newsMessage = new NewsMessageContent();
-                newsMessage.Topic = message.Topic;
-                newsMessage.Content = message.Content;
-                newsMessage.eventTopic = newMessageTopicEventName;
+                EventDataBase eventData = new EventDataBase();
+
+                eventData.eventTopic = message.Topic;
+                eventData.eventContent = message.Content;
 
                 #endregion
 
                 #region 執行發佈服務
 
-                await daprPubSub.PublishEvent(newsMessage).ConfigureAwait(false);
+                await daprPubSub.PublishEvent(
+                    eventData,
+                    newMessageTopicEventName
+                ).ConfigureAwait(false);
 
                 #endregion
 
-                log.LogInformation($"已發佈新公告，Id: {newsMessage.eventId}，Topic: {newsMessage.Topic}");
+                log.LogInformation($"已發佈新公告，Id: {eventData.eventId}，Topic: {eventData.eventTopic}");
 
                 result.RunStatus = true;
-                result.Msg = newsMessage.eventId;
+                result.Msg = eventData.eventId;
             }
             catch (Exception ex)
             {
@@ -103,18 +111,22 @@ namespace dapr_aspnetcore.Controllers
         /// <returns></returns>
         [Topic(PubSubComponent, newMessageTopicEventName)]
         [HttpPost("SubscribeNewMessageEvent")]
-        public async Task<ActionResult> SubscribeNewMessageEventHandler(NewsMessageContent message)
+        public async Task<ActionResult> SubscribeNewMessageEventHandler(EventDataBase message)
         {
             log.LogInformation("收到有新公告發佈訊息，執行新增該公告狀態紀錄.");
 
-            // 將發佈的新公告內容更新至Redis內
-            await dapr.SaveStateAsync(
-                StateStoreComponent, // Dapr state store component name.
-                message.eventId, // 這裡我們依據各公告的Id來進行狀態紀錄Key
-                message //  Key內容
-            );
+            try
+            {
+                // 將發佈的事件訊息更新至Redis內
+                await daprStateStore.SaveStateEvent(message);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                log.LogError($"{ex.Message}\n{ex.StackTrace}");
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -126,6 +138,8 @@ namespace dapr_aspnetcore.Controllers
         /// <param name="Id">公告訊息紀錄編號</param>
         /// <returns></returns>
         [HttpDelete("DeleteNewsMessageState")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> DeleteNewsMessageHandler(string Id)
         {
             if (string.IsNullOrEmpty(Id))
@@ -136,20 +150,23 @@ namespace dapr_aspnetcore.Controllers
 
             log.LogInformation($"收到刪除公告編號: {Id} 內容請求.");
 
-            // 查詢公告State紀錄實體
-            StateEntry<Message> getState = await dapr.GetStateEntryAsync<Message>(
-                StateStoreComponent, // Dapr state store component name.
-                Id // 公告State紀錄Key都是以自己Id來命名
-            );
-
-            if (getState == null)
+            try
             {
-                log.LogWarning("未有該筆公告State紀錄.");
-                return NotFound("該筆公告不存在.");
-            }
+                var checkState = await daprStateStore.GetStateEvent(Id);
 
-            // 執行刪除該公告狀態紀錄
-            await getState.DeleteAsync();
+                if (checkState == null)
+                {
+                    return NotFound("該筆公告不存在.");
+                }
+
+                await daprStateStore.DeleteStateEvent(Id);
+            }
+            catch (Exception ex)
+            {
+                log.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+
+                return NotFound("刪除公告訊息發生錯誤.");
+            }
 
             log.LogInformation($"公告編號: {Id} 已刪除.");
 
@@ -165,28 +182,36 @@ namespace dapr_aspnetcore.Controllers
         /// <param name="message">公告訊息內容</param>
         /// <returns></returns>
         [HttpPost("UpdateNewsMessageState")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> UpdateNewsMessageHandler(Message message)
         {
-            // 查詢公告State紀錄實體
-            StateEntry<Message> getState = await dapr.GetStateEntryAsync<Message>(
-                StateStoreComponent, // Dapr state store component name.
-                message.Id // 公告State紀錄Key都是以自己Id來命名
-            );
-
-            if (getState.Value == null)
+            if (message == null)
             {
-                log.LogWarning("未有該筆公告State紀錄.");
-                return NotFound("該筆公告紀錄不存在.");
+                log.LogWarning("未輸入公告內容.");
+                return NotFound("未給予公告內容.");
             }
 
-            // 執行更新該公告內容
-            getState.Value.Topic = message.Topic;
-            getState.Value.Content = message.Content;
+            log.LogInformation($"收到更新公告編號: {message.Id} 內容請求.");
 
-            // 將異動內容更新至State
-            await getState.SaveAsync();
+            try
+            {
+                EventDataBase eventData = new EventDataBase();
 
-            log.LogInformation($"已更新公告編號:{message.Id} 內容.");
+                eventData.eventTopic = message.Topic;
+                eventData.eventContent = message.Content;
+                eventData.eventId = message.Id;
+
+                await daprStateStore.UpdateStateEvent(eventData);
+
+                log.LogInformation($"已更新公告編號:{message.Id} 內容.");
+            }
+            catch (Exception ex)
+            {
+                log.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+
+                return NotFound("更新公告訊息發生錯誤.");
+            }
 
             return Ok("公告內容已更新.");
         }
@@ -200,7 +225,9 @@ namespace dapr_aspnetcore.Controllers
         /// <param name="Id">公告紀錄State Id</param>
         /// <returns></returns>
         [HttpGet("QueryNewsMessageState")]
-        public async Task<ActionResult<Message>> QueryNewsMessageHandler(string Id)
+        [ProducesResponseType(typeof(EventDataBase), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<EventDataBase>> QueryNewsMessageHandler(string Id)
         {
             if (string.IsNullOrEmpty(Id))
             {
@@ -210,19 +237,20 @@ namespace dapr_aspnetcore.Controllers
 
             log.LogInformation($"收到查詢公告編號: {Id} 內容請求.");
 
-            // 查詢公告State紀錄實體
-            StateEntry<Message> getState = await dapr.GetStateEntryAsync<Message>(
-                StateStoreComponent, // Dapr state store component name.
-                Id // 公告State紀錄Key都是以自己Id來命名
-            );
+            EventDataBase getEventData = null;
 
-            if (getState.Value == null)
+            try
             {
-                log.LogWarning("未有該筆公告State紀錄.");
-                return NotFound("該筆公告紀錄不存在.");
+                getEventData = await daprStateStore.GetStateEvent(Id);
+            }
+            catch (Exception ex)
+            {
+                log.LogWarning($"{ex.Message}\n{ex.StackTrace}");
+
+                return NotFound("查詢公告訊息發生錯誤.");
             }
 
-            return getState.Value;
+            return getEventData;
         }
     }
 }

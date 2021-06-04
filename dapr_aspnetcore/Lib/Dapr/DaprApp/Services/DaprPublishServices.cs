@@ -26,7 +26,8 @@ namespace DaprApp.Services
         }
 
         public async Task PublishEvent<Target>(
-            Target eventData
+            Target eventData,
+            string mqTopic
         )
             where Target : EventDataBase
         {
@@ -35,7 +36,7 @@ namespace DaprApp.Services
                 // 發佈訊息至queues
                 await daprClientInstance.PublishEventAsync(
                     PubSubComponent, // pub/sub component name.
-                    eventData.eventTopic, // publish topic name.
+                    mqTopic, // publish topic name.
                     (dynamic)eventData// topic content.
                 );
 

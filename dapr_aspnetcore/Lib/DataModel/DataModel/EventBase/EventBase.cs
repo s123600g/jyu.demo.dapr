@@ -32,5 +32,10 @@ namespace DataModel.EventBase
         /// 事件主題
         /// </summary>
         public string eventTopic { set; get; }
+
+        /// <summary>
+        /// 事件內容
+        /// </summary>
+        public string eventContent { set; get; }
     }
 }
