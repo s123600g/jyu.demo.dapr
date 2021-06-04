@@ -9,11 +9,12 @@
         "dapr-placement": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
-        "zipkin": "StartWithoutDebugging"
+        "zipkin": "StartWithoutDebugging",
+        "MainWebApi": "StartDebugging",
+        "MainWebApi-dapr": "StartWithoutDebugging"
       },
-      "composeLaunchAction": "LaunchBrowser",
-      "commandVersion": "1.0",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/"
+      "composeLaunchAction": "None",
+      "commandVersion": "1.0"
     }
   }
 }

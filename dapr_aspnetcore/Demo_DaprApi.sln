@@ -13,9 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DaprServices", "DaprService
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{1C1AF528-8A88-4072-9070-02E53B16EBD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataModel", "Lib\DataModel\DataModel\DataModel.csproj", "{B19D19B5-367C-4C3C-8391-5C72BF2F878A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModel", "Lib\DataModel\DataModel\DataModel.csproj", "{B19D19B5-367C-4C3C-8391-5C72BF2F878A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaprApp", "Lib\Dapr\DaprApp\DaprApp.csproj", "{1D439B1F-89C7-474D-8B17-88FA3DE48713}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaprApp", "Lib\Dapr\DaprApp\DaprApp.csproj", "{1D439B1F-89C7-474D-8B17-88FA3DE48713}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainWebApi", "MainWebApi\MainWebApi.csproj", "{CD192785-62FA-4F5F-B3FE-858B46EE77B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{1D439B1F-89C7-474D-8B17-88FA3DE48713}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D439B1F-89C7-474D-8B17-88FA3DE48713}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D439B1F-89C7-474D-8B17-88FA3DE48713}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD192785-62FA-4F5F-B3FE-858B46EE77B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD192785-62FA-4F5F-B3FE-858B46EE77B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD192785-62FA-4F5F-B3FE-858B46EE77B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD192785-62FA-4F5F-B3FE-858B46EE77B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

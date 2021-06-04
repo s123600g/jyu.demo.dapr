@@ -42,11 +42,10 @@ services:
       - zipkin
       - dapr-placement     
     ports:
-      - "80"
-      - "443"
+      - "11560:80"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - "./log:/app/bin/Debug/netcoreapp3.1/Log"
+      - "./log/dapr_aspnetcore:/app/bin/Debug/netcoreapp3.1/Log"
     networks: 
       - dapr_aspnetcore
 
@@ -55,6 +54,39 @@ services:
     command: [
       "./daprd", 
       "-app-id", "dapr_aspnetcore", 
+      "-app-port", "80",
+      # "--dapr-http-port", "3500",
+      # "--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/components",
+      "-config", "/configuration/config.yaml"
+      ]
+    volumes: 
+      - "./dapr/Components:/components"
+      - "./dapr/Config:/configuration"
+
+  MainWebApi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on: 
+      - rabbitmq
+      - redis
+      - zipkin
+      - dapr-placement     
+    ports:
+      - "11561:80"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "./log/MainWebApi:/app/bin/Debug/netcoreapp3.1/Log"
+    networks: 
+      - dapr_aspnetcore
+
+  MainWebApi-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "MainWebApi", 
       "-app-port", "80",
       # "--dapr-http-port", "3500",
       # "--dapr-grpc-port", "50001",

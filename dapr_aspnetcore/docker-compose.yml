@@ -38,3 +38,20 @@ services:
     depends_on:
       - dapr_aspnetcore
     network_mode: "service:dapr_aspnetcore"
+
+  MainWebApi:
+    image: ${DOCKER_REGISTRY-}mainwebapi
+    build:
+      context: .
+      dockerfile: MainWebApi/Dockerfile
+   
+  MainWebApi-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "MainWebApi", 
+      "-app-port", "80" 
+      ]
+    depends_on:
+      - MainWebApi
+    network_mode: "service:MainWebApi"

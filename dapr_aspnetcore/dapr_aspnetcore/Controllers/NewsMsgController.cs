@@ -25,19 +25,16 @@ namespace dapr_aspnetcore.Controllers
     public class NewsMsgController : ControllerBase
     {
         private readonly ILogger<NewsMsgController> log;
-        private readonly DaprClient dapr;
         private readonly IPubSubEvent daprPubSub;
         private readonly IStateStoreEvent daprStateStore;
 
         public NewsMsgController(
             ILogger<NewsMsgController> logger,
-            DaprClient daprClient,
             IPubSubEvent pubSubEvent,
             IStateStoreEvent stateStoreEvent
         )
         {
             log = logger;
-            dapr = daprClient;
             daprPubSub = pubSubEvent;
             daprStateStore = stateStoreEvent;
         }
