@@ -98,5 +98,71 @@ services:
       - "./dapr/Components:/components"
       - "./dapr/Config:/configuration"
 
+  News.Web.Api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on: 
+      - rabbitmq
+      - redis
+      - zipkin
+      - dapr-placement     
+    ports:
+      - "11562:80"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "./log/News.Web.Api:/app/bin/Debug/netcoreapp3.1/Log"
+    networks: 
+      - dapr_aspnetcore
+
+  News.Web.Api-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "News.Web.Api", 
+      "-app-port", "80",
+      # "--dapr-http-port", "3500",
+      # "--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/components",
+      "-config", "/configuration/config.yaml"
+      ]
+    volumes: 
+      - "./dapr/Components:/components"
+      - "./dapr/Config:/configuration"
+
+  Article.Web.Api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on: 
+      - rabbitmq
+      - redis
+      - zipkin
+      - dapr-placement     
+    ports:
+      - "11563:80"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "./log/Article.Web.Api:/app/bin/Debug/netcoreapp3.1/Log"
+    networks: 
+      - dapr_aspnetcore
+
+  Article.Web.Api-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "Article.Web.Api", 
+      "-app-port", "80",
+      # "--dapr-http-port", "3500",
+      # "--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/components",
+      "-config", "/configuration/config.yaml"
+      ]
+    volumes: 
+      - "./dapr/Components:/components"
+      - "./dapr/Config:/configuration"
+
 networks:
   dapr_aspnetcore: 

@@ -2,7 +2,7 @@
   "profiles": {
     "Docker Compose": {
       "commandName": "DockerCompose",
-      "composeLaunchServiceName": "dapr_aspnetcore",
+      "composeLaunchServiceName": "MainWebApi",
       "serviceActions": {
         "dapr_aspnetcore": "StartDebugging",
         "dapr_aspnetcore-dapr": "StartWithoutDebugging",
@@ -11,7 +11,11 @@
         "redis": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging",
         "MainWebApi": "StartDebugging",
-        "MainWebApi-dapr": "StartWithoutDebugging"
+        "MainWebApi-dapr": "StartWithoutDebugging",
+        "News.Web.Api": "StartDebugging",
+        "News.Web.Api-dapr": "StartWithoutDebugging",
+        "Article.Web.Api": "StartDebugging",
+        "Article.Web.Api-dapr": "StartWithoutDebugging"
       },
       "composeLaunchAction": "None",
       "commandVersion": "1.0"
