@@ -16,14 +16,14 @@ using static DataModel.Dapr.DaprAppIdName;
 
 namespace MainWebApi.Controllers
 {
-    [Area("Dpar_HttpClient")]
+    [Area("Test")]
     [Route("[area]/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class DaprHttpclientController : ControllerBase
+    public class HttpClientController : ControllerBase
     {
-        private readonly ILogger<DaprHttpclientController> log;
-        public DaprHttpclientController(ILogger<DaprHttpclientController> logger)
+        private readonly ILogger<HttpClientController> log;
+        public HttpClientController(ILogger<HttpClientController> logger)
         {
             log = logger;
         }
@@ -64,7 +64,7 @@ namespace MainWebApi.Controllers
         /// <returns></returns>
         [HttpPost("UpdateNewsMessage")]
         [ProducesResponseType(typeof(EventDataBase), StatusCodes.Status200OK)]
-        public async Task<EventDataBase> UpdateNewsMessageHandler(News data)
+        public async Task<EventDataBase> UpdateNewsMessageHandler(NewsContent data)
         {
             log.LogInformation($"收到更新公告內容請求，依據公告編號: {data.Id}");
 

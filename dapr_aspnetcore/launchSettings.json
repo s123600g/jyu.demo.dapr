@@ -12,10 +12,10 @@
         "zipkin": "StartWithoutDebugging",
         "MainWebApi": "StartDebugging",
         "MainWebApi-dapr": "StartWithoutDebugging",
-        "News.Web.Api": "StartDebugging",
-        "News.Web.Api-dapr": "StartWithoutDebugging",
-        "Article.Web.Api": "StartDebugging",
-        "Article.Web.Api-dapr": "StartWithoutDebugging"
+        "News_WebApi": "StartDebugging",
+        "News_WebApi-dapr": "StartWithoutDebugging",
+        "Article_WebApi": "StartDebugging",
+        "Article_WebApi-dapr": "StartWithoutDebugging"
       },
       "composeLaunchAction": "None",
       "commandVersion": "1.0"

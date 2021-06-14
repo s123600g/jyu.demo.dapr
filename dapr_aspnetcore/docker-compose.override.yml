@@ -53,6 +53,8 @@ services:
     image: "daprio/dapr:latest"
     command: [
       "./daprd", 
+      # Notice!! --app-id value must lowercase. If you're not use lowercase, 
+      # You will get 500 Internal Server Error from response result.
       "-app-id", "dapr_aspnetcore", 
       "-app-port", "80",
       # "--dapr-http-port", "3500",
@@ -64,6 +66,85 @@ services:
     volumes: 
       - "./dapr/Components:/components"
       - "./dapr/Config:/configuration"
+    depends_on:
+      - dapr_aspnetcore
+    network_mode: "service:dapr_aspnetcore"
+
+  News_WebApi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on: 
+      - rabbitmq
+      - redis
+      - zipkin
+      - dapr-placement     
+    ports:
+      - "11562:80"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "./log/News.Web.Api:/app/bin/Debug/netcoreapp3.1/Log"
+    networks: 
+      - dapr_aspnetcore
+
+  News_WebApi-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      # Notice!! --app-id value must lowercase. If you're not use lowercase, 
+      # You will get 500 Internal Server Error from response result.
+      "-app-id", "news_webapi", 
+      "-app-port", "80",
+       #"--dapr-http-port", "3500",
+       #"--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/components",
+      "-config", "/configuration/config.yaml"
+      ]
+    volumes: 
+      - "./dapr/Components:/components"
+      - "./dapr/Config:/configuration"
+    depends_on:
+      - News_WebApi
+    network_mode: "service:News_WebApi"
+
+  Article_WebApi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on: 
+      - rabbitmq
+      - redis
+      - zipkin
+      - dapr-placement     
+    ports:
+      - "11563:80"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "./log/Article.Web.Api:/app/bin/Debug/netcoreapp3.1/Log"
+    networks: 
+      - dapr_aspnetcore
+
+  Article_WebApi-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      # Notice!! --app-id value must lowercase. If you're not use lowercase, 
+      # You will get 500 Internal Server Error from response result.
+      "-app-id", "article_webapi", 
+      "-app-port", "80",
+      # "--dapr-http-port", "3500",
+      # "--dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50005",
+      "-components-path", "/components",
+      "-config", "/configuration/config.yaml"
+      ]
+    volumes: 
+      - "./dapr/Components:/components"
+      - "./dapr/Config:/configuration"
+    depends_on:
+      - Article_WebApi
+    network_mode: "service:Article_WebApi"
 
   MainWebApi:
     environment:
@@ -86,83 +167,24 @@ services:
     image: "daprio/dapr:latest"
     command: [
       "./daprd", 
+      # Notice!! --app-id value must lowercase. If you're not use lowercase, 
+      # You will get 500 Internal Server Error from response result.
       "-app-id", "MainWebApi", 
       "-app-port", "80",
       # "--dapr-http-port", "3500",
       # "--dapr-grpc-port", "50001",
       "-placement-host-address", "dapr-placement:50005",
       "-components-path", "/components",
-      "-config", "/configuration/config.yaml"
+      "-config", "/configuration/config.yaml",
+      "--log-level", "debug"
       ]
     volumes: 
       - "./dapr/Components:/components"
       - "./dapr/Config:/configuration"
+    depends_on:
+      - MainWebApi
+    network_mode: "service:MainWebApi"
 
-  News.Web.Api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    depends_on: 
-      - rabbitmq
-      - redis
-      - zipkin
-      - dapr-placement     
-    ports:
-      - "11562:80"
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - "./log/News.Web.Api:/app/bin/Debug/netcoreapp3.1/Log"
-    networks: 
-      - dapr_aspnetcore
-
-  News.Web.Api-dapr:
-    image: "daprio/dapr:latest"
-    command: [
-      "./daprd", 
-      "-app-id", "News.Web.Api", 
-      "-app-port", "80",
-      # "--dapr-http-port", "3500",
-      # "--dapr-grpc-port", "50001",
-      "-placement-host-address", "dapr-placement:50005",
-      "-components-path", "/components",
-      "-config", "/configuration/config.yaml"
-      ]
-    volumes: 
-      - "./dapr/Components:/components"
-      - "./dapr/Config:/configuration"
-
-  Article.Web.Api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    depends_on: 
-      - rabbitmq
-      - redis
-      - zipkin
-      - dapr-placement     
-    ports:
-      - "11563:80"
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - "./log/Article.Web.Api:/app/bin/Debug/netcoreapp3.1/Log"
-    networks: 
-      - dapr_aspnetcore
-
-  Article.Web.Api-dapr:
-    image: "daprio/dapr:latest"
-    command: [
-      "./daprd", 
-      "-app-id", "Article.Web.Api", 
-      "-app-port", "80",
-      # "--dapr-http-port", "3500",
-      # "--dapr-grpc-port", "50001",
-      "-placement-host-address", "dapr-placement:50005",
-      "-components-path", "/components",
-      "-config", "/configuration/config.yaml"
-      ]
-    volumes: 
-      - "./dapr/Components:/components"
-      - "./dapr/Config:/configuration"
 
 networks:
   dapr_aspnetcore: 

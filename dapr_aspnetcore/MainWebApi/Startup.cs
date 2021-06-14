@@ -1,3 +1,5 @@
+using DaprApp.Models;
+using MainWebApi.Filter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +31,10 @@ namespace MainWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers()
+            services.AddControllers(optiopns =>
+                // 註冊專門過濾處理當Action發生錯誤時，最後要處理的回應訊息
+                optiopns.Filters.Add(new HttpResponseExceptionFilter())
+            )
             .AddJsonOptions(options =>
             {
                 // 設置Reponse內JSON key命名規則使用PascalCase而不是使用預設camelCase(駝峰式命名)
@@ -85,10 +90,20 @@ namespace MainWebApi
                 SWGENOptions.IncludeXmlComments(xmlPath);
 
                 #endregion
+
+                #region 設置Swagger 項目過濾器
+
+                // 註冊Api分群項目過濾器
+                SWGENOptions.OperationFilter<TagByAreaNameOperationFilter>();
+
+                #endregion
             });
 
             // 補齊.net core字元編碼類型，避免出現亂碼現象
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+
+            // 設置Appsettings內 - DaprAppServicesName至指定模型去
+            services.Configure<AppServicesName>(Configuration.GetSection("DaprAppServicesName"));
 
         }
 

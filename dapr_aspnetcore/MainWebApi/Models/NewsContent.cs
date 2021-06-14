@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MainWebApi.Models
 {
-    public class News
+    public class NewsContent
     {
         /// <summary>
         /// 公告Id

@@ -35,9 +35,34 @@ services:
       "-app-id", "dapr_aspnetcore", 
       "-app-port", "80" 
       ]
-    depends_on:
-      - dapr_aspnetcore
-    network_mode: "service:dapr_aspnetcore"
+
+  News_WebApi:
+    image: ${DOCKER_REGISTRY-}newswebapi
+    build:
+      context: .
+      dockerfile: ApiServices/News.Web.Api/News.Web.Api/Dockerfile
+   
+  News_WebApi-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "News_WebApi", 
+      "-app-port", "80" 
+      ]
+
+  Article_WebApi:
+    image: ${DOCKER_REGISTRY-}articlewebapi
+    build:
+      context: .
+      dockerfile: ApiServices/Article.Web.Api/Article.Web.Api/Dockerfile
+   
+  Article_WebApi-dapr:
+    image: "daprio/dapr:latest"
+    command: [
+      "./daprd", 
+      "-app-id", "Article_WebApi", 
+      "-app-port", "80" 
+      ]
 
   MainWebApi:
     image: ${DOCKER_REGISTRY-}mainwebapi
@@ -52,40 +77,3 @@ services:
       "-app-id", "MainWebApi", 
       "-app-port", "80" 
       ]
-    depends_on:
-      - MainWebApi
-    network_mode: "service:MainWebApi"
-
-  News.Web.Api:
-    image: ${DOCKER_REGISTRY-}newswebapi
-    build:
-      context: .
-      dockerfile: ApiServices//News.Web.Api/News.Web.Api/Dockerfile
-   
-  News.Web.Api-dapr:
-    image: "daprio/dapr:latest"
-    command: [
-      "./daprd", 
-      "-app-id", "News.Web.Api", 
-      "-app-port", "80" 
-      ]
-    depends_on:
-      - News.Web.Api
-    network_mode: "service:News.Web.Api"
-
-  Article.Web.Api:
-    image: ${DOCKER_REGISTRY-}articlewebapi
-    build:
-      context: .
-      dockerfile: ApiServices/Article.Web.Api/Article.Web.Api/Dockerfile
-   
-  Article.Web.Api-dapr:
-    image: "daprio/dapr:latest"
-    command: [
-      "./daprd", 
-      "-app-id", "Article.Web.Api", 
-      "-app-port", "80" 
-      ]
-    depends_on:
-      - Article.Web.Api
-    network_mode: "service:Article.Web.Api"
