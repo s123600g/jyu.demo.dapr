@@ -154,13 +154,13 @@ namespace News.Web.Api
                 // 讓屬於Dapr處理的pub/sub請求導向到Dapr自己的runtime去處理
                 endpoints.MapSubscribeHandler();
 
+                endpoints.MapControllers();
+
                 // 設定Api路由樣式匹配規則
                 endpoints.MapControllerRoute(
                     name: "ApiArea",
-                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                    pattern: "{area:exists}/{controller}/{action}"
                 );
-
-                endpoints.MapControllers();
             });
         }
     }

@@ -5,26 +5,25 @@ using DataModel.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using News.Web.Api.Controllers;
 using News.Web.Api.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace News.Web.Api.Area.Activity.Controllers
+namespace News.Web.Api.Area.System.Controllers
 {
     [Route("[area]/[controller]")]
-    [Area("Activity")]
+    [Area("System")]
     [Produces("application/json")]
     [ApiController]
-    public class ActivityNewsController : ControllerBase
+    public class SystemNewsEventController : ControllerBase
     {
-        private readonly ILogger<ActivityNewsController> log;
+        private readonly ILogger<SystemNewsEventController> log;
         private readonly IStateStoreEvent daprStateStore;
 
-        public ActivityNewsController(
-            ILogger<ActivityNewsController> logger,
+        public SystemNewsEventController(
+            ILogger<SystemNewsEventController> logger,
             IStateStoreEvent stateStoreEvent
         )
         {

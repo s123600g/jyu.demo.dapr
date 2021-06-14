@@ -25,6 +25,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "News.Web.Api", "ApiServices
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiServices", "ApiServices", "{43CEE3DC-1BD2-4589-AD6D-223BC55B4DCA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dapr_Config", "Dapr_Config", "{3540B01B-AFFD-4B1A-AFB0-F8297080B1B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{13763D6E-8458-4A7F-ACA2-FA69EBD75F66}"
+	ProjectSection(SolutionItems) = preProject
+		dapr\Components\pubsub.yaml = dapr\Components\pubsub.yaml
+		dapr\Components\statestore.yaml = dapr\Components\statestore.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{EE3E4943-6EAE-478A-8633-8F099E4AF704}"
+	ProjectSection(SolutionItems) = preProject
+		dapr\Config\config.yaml = dapr\Config\config.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +84,8 @@ Global
 		{1D439B1F-89C7-474D-8B17-88FA3DE48713} = {5CD80AC5-5649-49F3-83C0-128291072FED}
 		{969EF23E-28A2-43E3-B12C-D73A884C5701} = {43CEE3DC-1BD2-4589-AD6D-223BC55B4DCA}
 		{BB90B3D4-33EB-4B7D-A0B0-AA2A55779C8D} = {43CEE3DC-1BD2-4589-AD6D-223BC55B4DCA}
+		{13763D6E-8458-4A7F-ACA2-FA69EBD75F66} = {3540B01B-AFFD-4B1A-AFB0-F8297080B1B7}
+		{EE3E4943-6EAE-478A-8633-8F099E4AF704} = {3540B01B-AFFD-4B1A-AFB0-F8297080B1B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4416E2DD-9AE8-4DD9-ACA9-B8755330C380}
