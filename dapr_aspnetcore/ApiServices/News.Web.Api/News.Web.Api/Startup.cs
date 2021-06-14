@@ -34,7 +34,7 @@ namespace News.Web.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(optiopns =>
-                // 注入專門過濾處理當Action發生錯誤時，最後要處理的回應訊息
+                // 註冊專門過濾處理當Action發生錯誤時，最後要處理的回應訊息
                 optiopns.Filters.Add(new HttpResponseExceptionFilter())
             )
            .AddJsonOptions(options =>
@@ -94,6 +94,13 @@ namespace News.Web.Api
                 SWGENOptions.IncludeXmlComments(xmlPath);
 
                 #endregion
+
+                #region 設置Swagger 項目過濾器
+
+                // 註冊Api分群項目過濾器
+                SWGENOptions.OperationFilter<TagByAreaNameOperationFilter>();
+
+                #endregion
             });
 
             // 補齊.net core字元編碼類型，避免出現亂碼現象
@@ -147,13 +154,13 @@ namespace News.Web.Api
                 // 讓屬於Dapr處理的pub/sub請求導向到Dapr自己的runtime去處理
                 endpoints.MapSubscribeHandler();
 
-                endpoints.MapControllers();
-
                 // 設定Api路由樣式匹配規則
                 endpoints.MapControllerRoute(
                     name: "ApiArea",
-                    pattern: "{area:exists}/{controller}/{action}"
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
                 );
+
+                endpoints.MapControllers();
             });
         }
     }
