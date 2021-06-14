@@ -1,3 +1,4 @@
+using Article.Web.Api.Filter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +30,15 @@ namespace Article.Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddJsonOptions(options =>
+            services.AddControllers(optioons =>
+            {
+                optioons.Filters.Add<HttpResponseExceptionFilter>();
+            }).AddJsonOptions(options =>
             {
                 // 設置Reponse內JSON key命名規則使用PascalCase而不是使用預設camelCase(駝峰式命名)
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
             })
-            .AddDapr() // 註冊Dapr Services入App Pipline
+                        .AddDapr() // 註冊Dapr Services入App Pipline
             ;
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -82,6 +86,13 @@ namespace Article.Web.Api
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"; // 指定XML檔案名稱以專案名稱來命名
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile); // 指定放在專案目錄位置下
                 SWGENOptions.IncludeXmlComments(xmlPath);
+
+                #endregion
+
+                #region 設置Swagger 項目過濾器
+
+                // 註冊Api分群項目過濾器
+                SWGENOptions.OperationFilter<TagByAreaNameOperationFilter>();
 
                 #endregion
             });
