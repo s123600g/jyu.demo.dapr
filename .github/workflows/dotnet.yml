@@ -6,11 +6,15 @@ on:
   #pull_request:
    #branches: [ main ]
 
+defaults:
+  run:
+    working-directory: dapr_aspnetcore
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
