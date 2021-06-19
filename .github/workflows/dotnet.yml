@@ -22,7 +22,7 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Restore dependencies
-      run: dotnet restore ./dapr_aspnetcore/MainWebApi
+      run: dotnet restore ./dapr_aspnetcore/MainWebApi/MainWebApi.csproj
     - name: Build MainWebApi
       run: dotnet build ./dapr_aspnetcore/MainWebApi --no-restore
     - name: Build Article.Web.Api
