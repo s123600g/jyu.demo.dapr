@@ -1,3 +1,7 @@
+using Article.Web.Api.Filter;
+using DaprApp.Interface.pubsub;
+using DaprApp.Interface.statestore;
+using DaprApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +33,15 @@ namespace Article.Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddJsonOptions(options =>
+            services.AddControllers(optioons =>
+            {
+                optioons.Filters.Add<HttpResponseExceptionFilter>();
+            }).AddJsonOptions(options =>
             {
                 // 設置Reponse內JSON key命名規則使用PascalCase而不是使用預設camelCase(駝峰式命名)
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
             })
-            .AddDapr() // 註冊Dapr Services入App Pipline
+                        .AddDapr() // 註冊Dapr Services入App Pipline
             ;
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -84,11 +91,23 @@ namespace Article.Web.Api
                 SWGENOptions.IncludeXmlComments(xmlPath);
 
                 #endregion
+
+                #region 設置Swagger 項目過濾器
+
+                // 註冊Api分群項目過濾器
+                SWGENOptions.OperationFilter<TagByAreaNameOperationFilter>();
+
+                #endregion
             });
 
             // 補齊.net core字元編碼類型，避免出現亂碼現象
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
+            // 註冊Dapr PubSubEvent Services.
+            services.AddTransient<IPubSubEvent, DaprPublishServices>();
+
+            // 註冊Dapr StateStoreEvent Services.
+            services.AddTransient<IStateStoreEvent, DaprStateStoreServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
