@@ -1,0 +1,31 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+  #pull_request:
+   #branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build MainWebApi
+      run: dotnet build ./dapr_aspnetcore/MainWebApi --no-restore
+    - name: Build Article.Web.Api
+      run: dotnet build ./dapr_aspnetcore/ApiServices/Article.Web.Api --no-restore
+    - name: Build News.Web.Api
+      run: dotnet build ./dapr_aspnetcore/ApiServices/News.Web.Api --no-restore
+    - name: Build dapr_aspnetcore
+      run: dotnet build ./dapr_aspnetcore/ApiServices/dapr_aspnetcore --no-restore
+    #- name: Test
+      #run: dotnet test --no-build --verbosity normal
