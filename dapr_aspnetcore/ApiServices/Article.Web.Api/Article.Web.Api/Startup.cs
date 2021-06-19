@@ -1,4 +1,7 @@
 using Article.Web.Api.Filter;
+using DaprApp.Interface.pubsub;
+using DaprApp.Interface.statestore;
+using DaprApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +103,11 @@ namespace Article.Web.Api
             // ¸É»ô.net core¦r¤¸½s½XÃþ«¬¡AÁ×§K¥X²{¶Ã½X²{¶H
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
+            // µù¥UDapr PubSubEvent Services.
+            services.AddTransient<IPubSubEvent, DaprPublishServices>();
+
+            // µù¥UDapr StateStoreEvent Services.
+            services.AddTransient<IStateStoreEvent, DaprStateStoreServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
