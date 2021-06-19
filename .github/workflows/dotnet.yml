@@ -20,10 +20,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        path: 'dapr_aspnetcore/'
         dotnet-version: 3.1.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./dapr_aspnetcore
     - name: Build MainWebApi
       run: dotnet build ./dapr_aspnetcore/MainWebApi --no-restore
     - name: Build Article.Web.Api
