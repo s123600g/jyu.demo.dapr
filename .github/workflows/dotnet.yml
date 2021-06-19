@@ -17,14 +17,20 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
-    - name: Restore dependencies
-      run: dotnet restore ./dapr_aspnetcore/MainWebApi/MainWebApi.csproj
+    - name: Restore dependencies - MainWebApi
+      run: dotnet restore ./dapr_aspnetcore/MainWebApi/
     - name: Build MainWebApi
       run: dotnet build ./dapr_aspnetcore/MainWebApi --no-restore
+    - name: Restore dependencies - Article.Web.Api
+      run: dotnet restore ./dapr_aspnetcore/ApiServices/Article.Web.Api/Article.Web.Api
     - name: Build Article.Web.Api
-      run: dotnet build ./dapr_aspnetcore/ApiServices/Article.Web.Api --no-restore
+      run: dotnet build ./dapr_aspnetcore/ApiServices/Article.Web.Api/Article.Web.Api --no-restore
+    - name: Restore dependencies - News.Web.Api
+      run: dotnet restore ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api
     - name: Build News.Web.Api
-      run: dotnet build ./dapr_aspnetcore/ApiServices/News.Web.Api --no-restore
+      run: dotnet build ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api --no-restore
+    - name: Restore dependencies - dapr_aspnetcore
+      run: dotnet restore ./dapr_aspnetcore/ApiServices/dapr_aspnetcore
     - name: Build dapr_aspnetcore
       run: dotnet build ./dapr_aspnetcore/ApiServices/dapr_aspnetcore --no-restore
     #- name: Test
