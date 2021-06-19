@@ -1,7 +1,7 @@
 ﻿using Dapr.Client;
 using DaprApp.Models;
+using DataModel.ArticleContent;
 using DataModel.EventBase;
-using DataModel.NewsMessage;
 using DataModel.Response;
 using MainWebApi.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,20 +14,18 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace MainWebApi.Area.News.Controller.System
+namespace MainWebApi.Area.Article.Controller.Food
 {
-    [Area("News-System")]
+    [Area("Article-Food")]
     [Route("[area]/[controller]")]
     [ApiController]
-    public class NewsSystemHttpClientController : ControllerBase
+    public class ArticleFoodHttpClientController : ControllerBase
     {
-        private readonly ILogger<NewsSystemHttpClientController> log;
+        private readonly ILogger<ArticleFoodHttpClientController> log;
         private readonly AppServicesName AppServicesName;
 
-        private const string AreaControllerPath = "/System/SystemNewsEvent";
-
-        public NewsSystemHttpClientController(
-            ILogger<NewsSystemHttpClientController> logger,
+        public ArticleFoodHttpClientController(
+            ILogger<ArticleFoodHttpClientController> logger,
             IOptionsMonitor<AppServicesName> options
         )
         {
@@ -35,29 +33,20 @@ namespace MainWebApi.Area.News.Controller.System
             AppServicesName = options.CurrentValue;
         }
 
-        /// <summary>
-        /// News Web API進行兩個API之間溝通，進行公告訊息查詢請求。
-        /// </summary>
-        /// <remarks>
-        /// 透過跟自己對應的dapr sidecar跟News Web API dapr sidecar進行溝通。
-        /// </remarks>
-        /// <param name="Id">公告編號</param>
-        /// <returns></returns>
-        [HttpGet("QueryNewsMessage")]
+        private const string AreaControllerPath = "/Food/FoodArticleEvent";
+
+        [HttpGet("Query")]
         [ProducesResponseType(typeof(EventDataBase), StatusCodes.Status200OK)]
-        public async Task<EventDataBase> QueryNewsMessageHandler(string Id)
+        public async Task<EventDataBase> QueryArticleHandler(string Id)
         {
-            log.LogInformation($"收到查詢公告內容請求，依據公告編號: {Id}");
+            log.LogInformation($"收到查詢文章內容請求，依據公告編號: {Id}");
 
             EventDataBase result;
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_ArticleName))
             {
-                //var client = DaprClient.CreateInvokeHttpClient(appId: "dapr_aspnetcore");
-
                 // [area]/[controller]/[template]
                 string queryURL = $"{AreaControllerPath}/Query?Id={Id}";
-                //string queryURL = $"/News/News/Query?Id={Id}";
 
                 var response = await client.GetAsync(queryURL);
 
@@ -73,28 +62,20 @@ namespace MainWebApi.Area.News.Controller.System
             return result;
         }
 
-        /// <summary>
-        /// 跟News Web API進行兩個API之間溝通，進行公告訊息內容更新請求。
-        /// </summary>
-        /// <param name="data"></param>
-        /// <remarks>
-        /// 透過跟自己對應的dapr sidecar跟News Web API dapr sidecar進行溝通。
-        /// </remarks>
-        /// <returns></returns>
-        [HttpPost("UpdateNewsMessage")]
+        [HttpPost("Update")]
         [ProducesResponseType(typeof(EventDataBase), StatusCodes.Status200OK)]
-        public async Task<EventDataBase> UpdateNewsMessageHandler(NewsContent data)
+        public async Task<EventDataBase> UpdateArticleHandler(ArticleArgContent data)
         {
-            log.LogInformation($"收到更新公告內容請求，依據公告編號: {data.Id}");
+            log.LogInformation($"收到更新文章內容請求，依據公告編號: {data.Id}");
 
             EventDataBase result;
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_ArticleName))
             {
                 // [area]/[controller]/[template]
                 string queryURL = $"{AreaControllerPath}/Update";
 
-                var response = await client.PostAsJsonAsync(queryURL, data);
+                var response = await client.PutAsJsonAsync(queryURL, data);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -108,23 +89,15 @@ namespace MainWebApi.Area.News.Controller.System
             return result;
         }
 
-        /// <summary>
-        /// News Web API進行兩個API之間溝通，進行公告訊息內容新增請求。
-        /// </summary>
-        /// <param name="data"></param>
-        /// <remarks>
-        /// 透過跟自己對應的dapr sidecar跟News Web API dapr sidecar進行溝通。
-        /// </remarks>
-        /// <returns></returns>
-        [HttpPost("CreateNewsMessage")]
+        [HttpPost("Create")]
         [ProducesResponseType(typeof(EventDataBase), StatusCodes.Status200OK)]
-        public async Task<EventDataBase> CreateNewsMessageHandler(NewsMessageArgument data)
+        public async Task<EventDataBase> CreateArticleHandler(ArticleContent data)
         {
-            log.LogInformation($"收到新增公告內容請求");
+            log.LogInformation($"收到新增文章內容請求");
 
             EventDataBase result;
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_ArticleName))
             {
                 // [area]/[controller]/[template]
                 string queryURL = $"{AreaControllerPath}/Create";
@@ -143,23 +116,15 @@ namespace MainWebApi.Area.News.Controller.System
             return result;
         }
 
-        /// <summary>
-        /// News Web API進行兩個API之間溝通，進行公告訊息刪除請求。
-        /// </summary>
-        /// <remarks>
-        /// 透過跟自己對應的dapr sidecar跟News Web API dapr sidecar進行溝通。
-        /// </remarks>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        [HttpDelete("DeleteNewsMessag")]
+        [HttpDelete("Delete")]
         [ProducesResponseType(typeof(ResponseResult), StatusCodes.Status200OK)]
-        public async Task<ResponseResult> DeleteNewsMessageHandler([FromQuery] string Id)
+        public async Task<ResponseResult> DeleteArticleHandler([FromQuery] string Id)
         {
-            log.LogInformation($"收到刪除公告內容請求，依據公告編號: {Id}");
+            log.LogInformation($"收到刪除文章請求，依據公告編號: {Id}");
 
             ResponseResult result;
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_ArticleName))
             {
                 // [area]/[controller]/[template]
                 string queryURL = $"{AreaControllerPath}/Delete?Id={Id}";

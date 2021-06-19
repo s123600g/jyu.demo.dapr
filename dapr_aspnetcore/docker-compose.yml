@@ -26,7 +26,7 @@ services:
     image: ${DOCKER_REGISTRY-}dapraspnetcore
     build:
       context: .
-      dockerfile: dapr_aspnetcore/Dockerfile
+      dockerfile: ApiServices/dapr_aspnetcore/Dockerfile
    
   dapr_aspnetcore-dapr:
     image: "daprio/dapr:latest"

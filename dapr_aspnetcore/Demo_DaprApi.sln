@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dapr_aspnetcore", "dapr_aspnetcore\dapr_aspnetcore.csproj", "{86EBED79-FC76-4A1A-9011-8E138E23B2EA}"
-EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0783FD77-E229-47E7-B88D-1157F8701CED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{3D8EE5CB-63B7-4A38-B7C4-B9886A3946E9}"
@@ -38,16 +36,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{EE3E49
 		dapr\Config\config.yaml = dapr\Config\config.yaml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dapr_aspnetcore", "ApiServices\dapr_aspnetcore\dapr_aspnetcore.csproj", "{3768ED47-6B9B-4765-B14B-82E038E4DA65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{86EBED79-FC76-4A1A-9011-8E138E23B2EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86EBED79-FC76-4A1A-9011-8E138E23B2EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86EBED79-FC76-4A1A-9011-8E138E23B2EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86EBED79-FC76-4A1A-9011-8E138E23B2EA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0783FD77-E229-47E7-B88D-1157F8701CED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0783FD77-E229-47E7-B88D-1157F8701CED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0783FD77-E229-47E7-B88D-1157F8701CED}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -72,12 +68,15 @@ Global
 		{BB90B3D4-33EB-4B7D-A0B0-AA2A55779C8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB90B3D4-33EB-4B7D-A0B0-AA2A55779C8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB90B3D4-33EB-4B7D-A0B0-AA2A55779C8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3768ED47-6B9B-4765-B14B-82E038E4DA65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3768ED47-6B9B-4765-B14B-82E038E4DA65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3768ED47-6B9B-4765-B14B-82E038E4DA65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3768ED47-6B9B-4765-B14B-82E038E4DA65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{86EBED79-FC76-4A1A-9011-8E138E23B2EA} = {43CEE3DC-1BD2-4589-AD6D-223BC55B4DCA}
 		{5CD80AC5-5649-49F3-83C0-128291072FED} = {3D8EE5CB-63B7-4A38-B7C4-B9886A3946E9}
 		{1C1AF528-8A88-4072-9070-02E53B16EBD0} = {3D8EE5CB-63B7-4A38-B7C4-B9886A3946E9}
 		{B19D19B5-367C-4C3C-8391-5C72BF2F878A} = {1C1AF528-8A88-4072-9070-02E53B16EBD0}
@@ -86,6 +85,7 @@ Global
 		{BB90B3D4-33EB-4B7D-A0B0-AA2A55779C8D} = {43CEE3DC-1BD2-4589-AD6D-223BC55B4DCA}
 		{13763D6E-8458-4A7F-ACA2-FA69EBD75F66} = {3540B01B-AFFD-4B1A-AFB0-F8297080B1B7}
 		{EE3E4943-6EAE-478A-8633-8F099E4AF704} = {3540B01B-AFFD-4B1A-AFB0-F8297080B1B7}
+		{3768ED47-6B9B-4765-B14B-82E038E4DA65} = {43CEE3DC-1BD2-4589-AD6D-223BC55B4DCA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4416E2DD-9AE8-4DD9-ACA9-B8755330C380}

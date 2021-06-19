@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace MainWebApi.Area.News.Controller.Activity
 {
-    [Area("News")]
+    [Area("News-Activity")]
     [Route("[area]/[controller]")]
     [ApiController]
     public class NewsActivityHttpClientController : ControllerBase
@@ -153,14 +153,14 @@ namespace MainWebApi.Area.News.Controller.Activity
         [ProducesResponseType(typeof(ResponseResult), StatusCodes.Status200OK)]
         public async Task<ResponseResult> DeleteNewsMessageHandler([FromQuery] string Id)
         {
-            log.LogInformation($"收到刪除公告內容請求，依據公告編號: {Id}");
+            log.LogInformation($"收到刪除公告請求，依據公告編號: {Id}");
 
             ResponseResult result;
 
             using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
             {
                 // [area]/[controller]/[template]
-                string queryURL = $"{AreaControllerPath}/Create?Id={Id}";
+                string queryURL = $"{AreaControllerPath}/Delete?Id={Id}";
 
                 var response = await client.DeleteAsync(queryURL);
 
