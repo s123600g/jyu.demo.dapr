@@ -13,16 +13,12 @@ jobs:
     steps:
     - name: Checkout
     - uses: actions/checkout@v2
-
     - name: Build the container stack.
       run: docker-compose -f "./dapr_aspnetcore/docker-compose.yml" build
-
     - name: Run the docker compose services.
       run: docker-compose -f "./dapr_aspnetcore/docker-compose.yml" up -d --no-build
-
     - name: Check the docker compose log.
       run: docker-compose log --follow --timestamps
-
     - name: Stop the docker compose services.
-      if: always()
+      if: ${{ always() }}
       run: docker-compose -f "./dapr_aspnetcore/docker-compose.yml" down
