@@ -24,6 +24,5 @@ jobs:
       run: docker-compose log --follow --timestamps
 
     - name: Stop the docker compose services.
-      if: ${{ always() }} 
+      if: always()
       run: docker-compose -f "./dapr_aspnetcore/docker-compose.yml" down
-      
