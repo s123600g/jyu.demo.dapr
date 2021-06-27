@@ -17,19 +17,33 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
+
     - name: Show current file list
       run: ls
+
     - name: Restore dependencies - MainWebApi
       run: dotnet restore ./dapr_aspnetcore/MainWebApi/
     - name: Build MainWebApi
       run: dotnet build ./dapr_aspnetcore/MainWebApi --no-restore
+
     - name: Restore dependencies - Article.Web.Api
       run: dotnet restore ./dapr_aspnetcore/ApiServices/Article.Web.Api/Article.Web.Api
     - name: Build Article.Web.Api
       run: dotnet build ./dapr_aspnetcore/ApiServices/Article.Web.Api/Article.Web.Api --no-restore
+
     - name: Restore dependencies - News.Web.Api
-      run: dotnet restore ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api
+      run: dotnet restore ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api      
     - name: Build News.Web.Api
       run: dotnet build ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api --no-restore
+
+    - name: Dapr install
+      run: wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+    - name: Dapr version
+      run: dapr --version
+    - name: Dapr components folder
+      run: ls $HOME/.dapr
+    - name: Dapr init
+      run: dapr init
+
     #- name: Test
       #run: dotnet test --no-build --verbosity normal
