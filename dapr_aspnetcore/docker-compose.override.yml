@@ -32,44 +32,6 @@ services:
   ####################################################################
   # Web Api Service and dapr services
   ####################################################################
-  dapr_aspnetcore:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    depends_on: 
-      - rabbitmq
-      - redis
-      - zipkin
-      - dapr-placement     
-    ports:
-      - "11560:80"
-    volumes:
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - "./log/dapr_aspnetcore:/app/bin/Debug/netcoreapp3.1/Log"
-    networks: 
-      - dapr_aspnetcore
-
-  dapr_aspnetcore-dapr:
-    image: "daprio/dapr:latest"
-    command: [
-      "./daprd", 
-      # Notice!! --app-id value must lowercase. If you're not use lowercase, 
-      # You will get 500 Internal Server Error from response result.
-      "-app-id", "dapr_aspnetcore", 
-      "-app-port", "80",
-      # "--dapr-http-port", "3500",
-      # "--dapr-grpc-port", "50001",
-      "-placement-host-address", "dapr-placement:50005",
-      "-components-path", "/components",
-      "-config", "/configuration/config.yaml"
-      ]
-    volumes: 
-      - "./dapr/Components:/components"
-      - "./dapr/Config:/configuration"
-    depends_on:
-      - dapr_aspnetcore
-    network_mode: "service:dapr_aspnetcore"
-
   News_WebApi:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

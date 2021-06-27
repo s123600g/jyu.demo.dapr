@@ -22,20 +22,6 @@ services:
   ####################################################################
   # Web Api Service and dapr services
   ####################################################################
-  dapr_aspnetcore:
-    image: ${DOCKER_REGISTRY-}dapraspnetcore
-    build:
-      context: .
-      dockerfile: ApiServices/dapr_aspnetcore/Dockerfile
-   
-  dapr_aspnetcore-dapr:
-    image: "daprio/dapr:latest"
-    command: [
-      "./daprd", 
-      "-app-id", "dapr_aspnetcore", 
-      "-app-port", "80" 
-      ]
-
   News_WebApi:
     image: ${DOCKER_REGISTRY-}newswebapi
     build:

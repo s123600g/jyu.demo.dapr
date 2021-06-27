@@ -4,8 +4,6 @@
       "commandName": "DockerCompose",
       "composeLaunchServiceName": "MainWebApi",
       "serviceActions": {
-        "dapr_aspnetcore": "StartDebugging",
-        "dapr_aspnetcore-dapr": "StartWithoutDebugging",
         "dapr-placement": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
