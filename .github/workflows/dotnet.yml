@@ -35,7 +35,7 @@ jobs:
       run: dotnet restore ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api      
     - name: Build News.Web.Api
       run: dotnet build ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api --no-restore
-
+# Running Dapr application
     - name: Dapr install
       run: wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
     - name: Dapr version
