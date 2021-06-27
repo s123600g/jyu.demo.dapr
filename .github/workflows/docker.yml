@@ -21,7 +21,7 @@ jobs:
       run: docker-compose -f "./dapr_aspnetcore/docker-compose.yml" -f "./dapr_aspnetcore/docker-compose.override.yml" up -d --no-build
 
     - name: Check the docker compose log.
-      run: docker-compose logs --follow --timestamps
+      run: docker-compose -f "./dapr_aspnetcore/docker-compose.yml" -f "./dapr_aspnetcore/docker-compose.override.yml" logs --follow --timestamps
 
     - name: Stop the docker compose services.
       if: ${{ always() }}
