@@ -40,10 +40,10 @@ jobs:
       run: wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
     - name: Dapr version
       run: dapr --version
-    - name: Dapr components folder
-      run: ls $HOME/.dapr
     - name: Dapr init
       run: dapr init
+    - name: Dapr docker container status
+      run: docker ps -a
 
     #- name: Test
       #run: dotnet test --no-build --verbosity normal
