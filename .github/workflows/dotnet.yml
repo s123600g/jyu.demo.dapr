@@ -29,9 +29,9 @@ jobs:
       run: dotnet restore ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api
     - name: Build News.Web.Api
       run: dotnet build ./dapr_aspnetcore/ApiServices/News.Web.Api/News.Web.Api --no-restore
-    - name: Restore dependencies - dapr_aspnetcore
-      run: dotnet restore ./dapr_aspnetcore/ApiServices/dapr_aspnetcore
-    - name: Build dapr_aspnetcore
-      run: dotnet build ./dapr_aspnetcore/ApiServices/dapr_aspnetcore --no-restore
+    # - name: Restore dependencies - dapr_aspnetcore
+    #  run: dotnet restore ./dapr_aspnetcore/ApiServices/dapr_aspnetcore
+    #- name: Build dapr_aspnetcore
+    #  run: dotnet build ./dapr_aspnetcore/ApiServices/dapr_aspnetcore --no-restore
     #- name: Test
       #run: dotnet test --no-build --verbosity normal
