@@ -1,4 +1,5 @@
 ﻿using Dapr.Client;
+using DaprApp.Interface.HttpClient;
 using DaprApp.Models;
 using DataModel.EventBase;
 using DataModel.NewsMessage;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,16 +26,19 @@ namespace MainWebApi.Area.News.Controller.Activity
     {
         private readonly ILogger<NewsActivityHttpClientController> log;
         private readonly AppServicesName AppServicesName;
+        private readonly IHttpClientEvent _httpClient;
 
         private const string AreaControllerPath = "/Activity/ActivityNewsEvent";
 
         public NewsActivityHttpClientController(
             ILogger<NewsActivityHttpClientController> logger,
-            IOptionsMonitor<AppServicesName> options
+            IOptionsMonitor<AppServicesName> options,
+            IHttpClientEvent httpClientEvent
         )
         {
             log = logger;
             AppServicesName = options.CurrentValue;
+            _httpClient = httpClientEvent;
         }
 
         /// <summary>
@@ -51,22 +56,23 @@ namespace MainWebApi.Area.News.Controller.Activity
             log.LogInformation($"收到查詢公告內容請求，依據公告編號: {Id}");
 
             EventDataBase result;
+            HttpResponseMessage response = new HttpResponseMessage();
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            // [area]/[controller]/[template]
+            string queryURL = $"{AreaControllerPath}/Query?Id={Id}";
+
+            response = await _httpClient.HttpRequestByGet(
+                appId: AppServicesName.DaprApp_NewsName,
+                requestUrl: queryURL
+            );
+
+            if (!response.IsSuccessStatusCode)
             {
-                // [area]/[controller]/[template]
-                string queryURL = $"{AreaControllerPath}/Query?Id={Id}";
-
-                var response = await client.GetAsync(queryURL);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
-                    throw new Exception("The error has occurred.");
-                }
-
-                result = await response.Content.ReadFromJsonAsync<EventDataBase>();
+                log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
+                throw new Exception("The error has occurred.");
             }
+
+            result = await response.Content.ReadFromJsonAsync<EventDataBase>();
 
             return result;
         }
@@ -87,21 +93,24 @@ namespace MainWebApi.Area.News.Controller.Activity
 
             EventDataBase result;
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            HttpResponseMessage response = new HttpResponseMessage();
+
+            // [area]/[controller]/[template]
+            string queryURL = $"{AreaControllerPath}/Update";
+
+            response = await _httpClient.HttpResponseByPut(
+                requestData: data,
+                appId: AppServicesName.DaprApp_NewsName,
+                requestUrl: queryURL
+            );
+
+            if (!response.IsSuccessStatusCode)
             {
-                // [area]/[controller]/[template]
-                string queryURL = $"{AreaControllerPath}/Update";
-
-                var response = await client.PostAsJsonAsync(queryURL, data);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
-                    throw new Exception("The error has occurred.");
-                }
-
-                result = await response.Content.ReadFromJsonAsync<EventDataBase>();
+                log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
+                throw new Exception("The error has occurred.");
             }
+
+            result = await response.Content.ReadFromJsonAsync<EventDataBase>();
 
             return result;
         }
@@ -122,21 +131,24 @@ namespace MainWebApi.Area.News.Controller.Activity
 
             EventDataBase result;
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            HttpResponseMessage response = new HttpResponseMessage();
+
+            // [area]/[controller]/[template]
+            string queryURL = $"{AreaControllerPath}/Create";
+
+            response = await _httpClient.HttpResponseByPost(
+                requestData: data,
+                appId: AppServicesName.DaprApp_NewsName,
+                requestUrl: queryURL
+            );
+
+            if (!response.IsSuccessStatusCode)
             {
-                // [area]/[controller]/[template]
-                string queryURL = $"{AreaControllerPath}/Create";
-
-                var response = await client.PostAsJsonAsync(queryURL, data).ConfigureAwait(false);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
-                    throw new Exception("The error has occurred.");
-                }
-
-                result = await response.Content.ReadFromJsonAsync<EventDataBase>();
+                log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
+                throw new Exception("The error has occurred.");
             }
+
+            result = await response.Content.ReadFromJsonAsync<EventDataBase>();
 
             return result;
         }
@@ -156,22 +168,23 @@ namespace MainWebApi.Area.News.Controller.Activity
             log.LogInformation($"收到刪除公告請求，依據公告編號: {Id}");
 
             ResponseResult result;
+            HttpResponseMessage response = new HttpResponseMessage();
 
-            using (var client = DaprClient.CreateInvokeHttpClient(appId: AppServicesName.DaprApp_NewsName))
+            // [area]/[controller]/[template]
+            string queryURL = $"{AreaControllerPath}/Delete?Id={Id}";
+
+            response = await _httpClient.HttpResponseByDelete(
+                appId: AppServicesName.DaprApp_NewsName,
+                requestUrl: queryURL
+            );
+
+            if (!response.IsSuccessStatusCode)
             {
-                // [area]/[controller]/[template]
-                string queryURL = $"{AreaControllerPath}/Delete?Id={Id}";
-
-                var response = await client.DeleteAsync(queryURL);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
-                    throw new Exception("The error has occurred.");
-                }
-
-                result = await response.Content.ReadFromJsonAsync<ResponseResult>();
+                log.LogWarning("請求過程發生錯誤，事件請求已終止執行。");
+                throw new Exception("The error has occurred.");
             }
+
+            result = await response.Content.ReadFromJsonAsync<ResponseResult>();
 
             return result;
         }

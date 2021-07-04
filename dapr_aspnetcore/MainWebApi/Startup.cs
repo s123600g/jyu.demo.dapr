@@ -1,4 +1,6 @@
+using DaprApp.Interface.HttpClient;
 using DaprApp.Models;
+using DaprApp.Services;
 using MainWebApi.Filter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -101,6 +103,7 @@ namespace MainWebApi
 
             // 補齊.net core字元編碼類型，避免出現亂碼現象
             services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+            services.AddSingleton<IHttpClientEvent, DaprHttpClientServices>();
 
             // 設置Appsettings內 - DaprAppServicesName至指定模型去
             services.Configure<AppServicesName>(Configuration.GetSection("DaprAppServicesName"));
